@@ -15,12 +15,10 @@ import java.util.Scanner;
 //TODO: 
 @SuppressWarnings("serial")
 public class AdderAgent extends Agent {  
-       
     private String container = "Container-1"; //the container to move to
-       
     private int result;
-    
     private Location origin;
+    private String fileName;
     
     
     @Override
@@ -28,9 +26,18 @@ public class AdderAgent extends Agent {
         System.out.println("\n---------------------------------------\n");
         System.out.println("DEBUG: Initiating " + this.getLocalName());
         
+        Object[] args = getArguments(); 
+        if (args != null && args.length > 0) { 
+            this.fileName = (String) args[0];
+        } else {
+            System.out.println("No fileName argument specified.");
+            this.doDelete();
+        }
+        
+        
         this.result = 0;
         this.origin = this.here();
-        this.doMove(new ContainerID(container, null));     
+        this.doMove(new ContainerID(container, null));
     }
     
     /**
@@ -39,13 +46,14 @@ public class AdderAgent extends Agent {
     @Override
     public void afterMove() {      
         
+
         if (this.here().getID().equals(this.origin.getID())) {
             System.out.printf("\033[1m\nThe sum of the numbers is: " + result + " \033[0m \n\n");
         } else {
             System.out.println("DEBUG: " + this.getLocalName() + " passing through " + this.here().getName());
                 
             try { //Read the file and make the sum
-                Scanner scanner = new Scanner(new File("numbers.txt"));
+                Scanner scanner = new Scanner(new File(this.fileName));
                 while(scanner.hasNextInt()) {
                     result += scanner.nextInt();
                 }
